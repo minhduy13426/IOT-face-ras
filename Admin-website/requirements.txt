@@ -1,0 +1,18 @@
+# --- Web Framework & Server ---
+fastapi==0.104.1
+uvicorn==0.24.0.post1
+python-multipart==0.0.6
+
+# --- Database & Vector ---
+psycopg2-binary==2.9.9
+pgvector==0.2.4
+
+# --- AI & Xử lý ảnh ---
+numpy==1.26.2
+deepface==0.0.84
+
+# --- Sửa lỗi xung đột TensorFlow ---
+tf-keras==2.15.0
+tensorflow==2.15.0
+
+python-dotenv==1.0.1

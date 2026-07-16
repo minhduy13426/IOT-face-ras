@@ -1,0 +1,11 @@
+# --- MQTT ---
+paho-mqtt==1.6.1
+
+# --- Database & Vector ---
+psycopg2-binary==2.9.9
+pgvector==0.2.4
+
+# --- AI & Xử lý ảnh ---
+numpy==1.26.2
+
+python-dotenv==1.0.1
