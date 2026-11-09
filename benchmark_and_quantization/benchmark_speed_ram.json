@@ -1,0 +1,36 @@
+{
+    "fp32": {
+        "model_name": "FaceNet512 FP32 (Baseline)",
+        "size_mb": 89.62,
+        "mean_latency_ms": 160.35,
+        "median_latency_ms": 159.80,
+        "min_latency_ms": 154.20,
+        "max_latency_ms": 172.50,
+        "p95_latency_ms": 166.40,
+        "p99_latency_ms": 170.80,
+        "pure_fps": 6.24,
+        "e2e_fps": 6.18,
+        "ram_peak_mb": 0.1,
+        "process_rss_mb": 450.38
+    },
+    "int8": {
+        "model_name": "FaceNet512 INT8 (Quantized)",
+        "size_mb": 23.44,
+        "mean_latency_ms": 43.54,
+        "median_latency_ms": 43.10,
+        "min_latency_ms": 41.20,
+        "max_latency_ms": 48.90,
+        "p95_latency_ms": 45.80,
+        "p99_latency_ms": 47.60,
+        "pure_fps": 22.97,
+        "e2e_fps": 22.80,
+        "ram_peak_mb": 0.01,
+        "process_rss_mb": 316.02
+    },
+    "improvements": {
+        "latency_speedup_percent": 72.8,
+        "fps_increase_percent": 268.1,
+        "size_reduction_percent": 73.8,
+        "latency_ratio": 3.68
+    }
+}

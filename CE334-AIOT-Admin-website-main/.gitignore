@@ -1,0 +1,9 @@
+# Environments
+.env
+
+# Bỏ qua luôn các thư mục chứa ảnh upload nếu bạn không muốn đưa ảnh test lên Github
+student_images/
+__pycache__/
+doan/
+
+.DS_Store

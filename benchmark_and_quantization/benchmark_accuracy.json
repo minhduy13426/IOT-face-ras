@@ -1,0 +1,47 @@
+{
+    "testset_info": {
+        "num_subjects": 20,
+        "total_images": 100,
+        "positive_pairs": 200,
+        "negative_pairs": 1000
+    },
+    "vector_fidelity": {
+        "mean_cosine_similarity_percent": 99.49,
+        "mean_l2_difference": 2.1895
+    },
+    "fp32_metrics": {
+        "best_accuracy_percent": 97.58,
+        "best_threshold": 21.5,
+        "best_tar_percent": 95.5,
+        "best_far_percent": 2.0,
+        "best_frr_percent": 4.5,
+        "eer_percent": 2.95,
+        "eer_threshold": 22.7,
+        "backend_threshold_23_5": {
+            "accuracy_percent": 96.67,
+            "tar_recall_percent": 98.0,
+            "far_percent": 3.6,
+            "frr_percent": 2.0
+        },
+        "mean_positive_dist": 15.8,
+        "mean_negative_dist": 30.23
+    },
+    "int8_metrics": {
+        "best_accuracy_percent": 97.5,
+        "best_threshold": 20.7,
+        "best_tar_percent": 94.5,
+        "best_far_percent": 1.9,
+        "best_frr_percent": 5.5,
+        "eer_percent": 3.0,
+        "eer_threshold": 23.0,
+        "backend_threshold_23_5": {
+            "accuracy_percent": 96.5,
+            "tar_recall_percent": 98.0,
+            "far_percent": 3.8,
+            "frr_percent": 2.0
+        },
+        "mean_positive_dist": 15.61,
+        "mean_negative_dist": 29.95
+    },
+    "accuracy_drop_percent": 0.08
+}
