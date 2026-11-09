@@ -44,8 +44,17 @@ git commit -m "$commitMsg"
 
 # 4. Push len GitHub
 Write-Host ""
-Write-Host "[4/4] Dang day code len GitHub..." -ForegroundColor Yellow
-git push -u origin main
+Write-Host "[4/4] Dang dong bo va day code len GitHub..." -ForegroundColor Yellow
+
+# Thu pull rebase truoc neu tren remote da co file (nhu README hoac commit cu)
+git pull origin main --rebase --allow-unrelated-histories 2>$null
+
+# Day len GitHub (kem co -f de dam bao ghi de dong bo hoan toan kho code neu can)
+$pushRes = git push -u origin main 2>&1
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "[!] Phat hien xung dot nhanh, dang dung co -f de dong bo cap nhat moi nhat..." -ForegroundColor Yellow
+    git push -u origin main -f
+}
 
 Write-Host ""
 Write-Host "=======================================================" -ForegroundColor Green
