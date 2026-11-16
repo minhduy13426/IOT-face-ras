@@ -424,15 +424,15 @@
 
     // Kiểm tra nếu đã có token thì chuyển thẳng sang index.html
     (function checkExistingToken() {
-      const token = localStorage.getItem('facedf-token');
-      if (token) {
-        // Redirect sang trang chính
-        window.location.replace('index.html');
-        return;
+      if (window.location.search.includes('clear=1')) {
+        localStorage.clear();
       }
-      // Hiện form đăng nhập
-      document.getElementById('fullLoading').style.display = 'none';
-      document.getElementById('loginWrapper').style.display = '';
+
+      // Luon hien thi form dang nhap khi o login.html
+      const fl = document.getElementById('fullLoading');
+      if (fl) fl.style.display = 'none';
+      const lw = document.getElementById('loginWrapper');
+      if (lw) lw.style.display = '';
     })();
 
     const loginForm = document.getElementById('loginForm');
@@ -500,9 +500,10 @@
           return;
         }
 
-        // Lưu token và thông tin tổ chức vào localStorage
-        localStorage.setItem('facedf-token', json.access_token);
-        localStorage.setItem('facedf-tenant-name', json.tenant_name || tenantCode);
+        // Lưu token và thông tin tổ chức vào localStorage chuẩn
+        localStorage.setItem('access_token', json.access_token);
+        localStorage.setItem('tenant_name', json.tenant_name || tenantCode);
+        localStorage.setItem('tenant_code', tenantCode);
 
         // Redirect sang trang chính
         window.location.replace('index.html');
