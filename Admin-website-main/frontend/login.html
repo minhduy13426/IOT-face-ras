@@ -4,459 +4,522 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description"
-    content="Hệ thống điểm danh khuôn mặt thông minh - Quản lý sinh viên và theo dõi điểm danh." />
-  <title>FaceDF — Hệ Thống Điểm Danh</title>
+  <meta name="description" content="Đăng nhập - FaceDF Hệ thống điểm danh thông minh" />
+  <title>FaceDF — Đăng Nhập</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
     rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ══════════════════════════════════════════════════════════════
+       FaceDF — login.html | Trang đăng nhập standalone
+    ══════════════════════════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f1117;
+      --bg2: #1a1d27;
+      --bg3: #22263a;
+      --border: rgba(255,255,255,0.08);
+      --text: #e8eaf0;
+      --text2: #9ba3b8;
+      --purple: #7c5fe6;
+      --purple-light: #9d7ff0;
+      --purple-glow: rgba(124,95,230,0.25);
+      --green: #22c55e;
+      --red: #ef4444;
+      --input-bg: rgba(255,255,255,0.05);
+      --input-border: rgba(255,255,255,0.12);
+      --input-focus: rgba(124,95,230,0.5);
+      --radius: 12px;
+      --shadow: 0 25px 50px rgba(0,0,0,0.5);
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Gradient background trang trí */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 20% 20%, rgba(124,95,230,0.15) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 80% 80%, rgba(34,197,94,0.08) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    /* ── Login Card ── */
+    .login-wrapper {
+      width: 100%;
+      max-width: 420px;
+      padding: 24px 16px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .login-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 40px 36px;
+      box-shadow: var(--shadow), 0 0 60px var(--purple-glow);
+    }
+
+    /* ── Logo & Brand ── */
+    .login-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 32px;
+    }
+
+    .login-logo {
+      width: 52px;
+      height: 52px;
+      background: linear-gradient(135deg, var(--purple), var(--purple-light));
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 20px var(--purple-glow);
+      flex-shrink: 0;
+    }
+
+    .login-logo svg {
+      width: 28px;
+      height: 28px;
+      color: white;
+      stroke: white;
+    }
+
+    .login-brand-text .brand-name {
+      display: block;
+      font-size: 22px;
+      font-weight: 800;
+      background: linear-gradient(90deg, #fff 0%, var(--purple-light) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.5px;
+    }
+
+    .login-brand-text .brand-sub {
+      display: block;
+      font-size: 12px;
+      color: var(--text2);
+      font-weight: 400;
+      margin-top: 2px;
+    }
+
+    /* ── Heading ── */
+    .login-heading {
+      margin-bottom: 28px;
+    }
+
+    .login-heading h1 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .login-heading p {
+      font-size: 13px;
+      color: var(--text2);
+    }
+
+    /* ── Form ── */
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .form-group label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text2);
+      letter-spacing: 0.3px;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    .input-wrap .input-icon {
+      position: absolute;
+      left: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text2);
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-wrap input {
+      width: 100%;
+      padding: 12px 14px 12px 40px;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+
+    .input-wrap input::placeholder {
+      color: rgba(155,163,184,0.5);
+    }
+
+    .input-wrap input:focus {
+      border-color: var(--purple);
+      box-shadow: 0 0 0 3px var(--input-focus);
+      background: rgba(124,95,230,0.05);
+    }
+
+    .input-wrap input:focus + .input-icon,
+    .input-wrap input:focus ~ .input-icon {
+      color: var(--purple-light);
+    }
+
+    /* ── Submit Button ── */
+    .btn-login {
+      margin-top: 4px;
+      padding: 13px 24px;
+      background: linear-gradient(135deg, var(--purple), var(--purple-light));
+      border: none;
+      border-radius: var(--radius);
+      color: white;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: opacity 0.2s, transform 0.1s, box-shadow 0.2s;
+      box-shadow: 0 4px 16px var(--purple-glow);
+      width: 100%;
+    }
+
+    .btn-login:hover:not(:disabled) {
+      opacity: 0.92;
+      box-shadow: 0 6px 24px var(--purple-glow);
+    }
+
+    .btn-login:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+
+    .btn-login:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* ── Spinner ── */
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Error banner ── */
+    .login-error {
+      display: none;
+      padding: 11px 14px;
+      background: rgba(239,68,68,0.12);
+      border: 1px solid rgba(239,68,68,0.3);
+      border-radius: var(--radius);
+      color: #f87171;
+      font-size: 13px;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .login-error.show { display: flex; }
+
+    /* ── Footer info ── */
+    .login-footer {
+      margin-top: 24px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text2);
+    }
+
+    .login-footer a {
+      color: var(--purple-light);
+      text-decoration: none;
+    }
+
+    /* ── Mobile responsive ── */
+    @media (max-width: 480px) {
+      .login-card {
+        padding: 28px 20px;
+      }
+
+      .login-wrapper {
+        padding: 16px 12px;
+      }
+    }
+
+    /* ── Loading overlay ── */
+    .full-loading {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+    }
+
+    .full-loading .spinner {
+      width: 36px;
+      height: 36px;
+      border-width: 3px;
+    }
+  </style>
 </head>
 
 <body>
 
-  <!-- ═══════════════ SIDEBAR ═══════════════ -->
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-brand">
-      <div class="brand-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" />
-          <circle cx="12" cy="10" r="3" />
-          <path d="M6 20c0-2.2 2.7-4 6-4s6 1.8 6 4" />
-        </svg>
-      </div>
-      <div class="brand-text">
-        <span class="brand-name">FaceDF</span>
-        <span class="brand-sub">Điểm Danh Thông Minh</span>
-      </div>
-      <button class="sidebar-collapse-btn" id="sidebarCollapseBtn" title="Thu gọn/Mở rộng Sidebar">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polyline points="15 18 9 12 15 6"></polyline>
-        </svg>
-      </button>
-    </div>
+  <!-- Loading khi kiểm tra token -->
+  <div class="full-loading" id="fullLoading">
+    <div class="spinner"></div>
+  </div>
 
-    <nav class="sidebar-nav">
-      <a href="#" class="nav-item active" data-tab="dashboard" id="nav-dashboard">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="3" y="3" width="7" height="7" rx="1" />
-          <rect x="14" y="3" width="7" height="7" rx="1" />
-          <rect x="3" y="14" width="7" height="7" rx="1" />
-          <rect x="14" y="14" width="7" height="7" rx="1" />
-        </svg>
-        <span>Dashboard</span>
-      </a>
-      <a href="#" class="nav-item" data-tab="students" id="nav-students">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-          <circle cx="9" cy="7" r="4" />
-          <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-        </svg>
-        <span>Sinh viên</span>
-      </a>
-      <a href="#" class="nav-item" data-tab="attendance" id="nav-attendance">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M9 11l3 3L22 4" />
-          <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
-        </svg>
-        <span>Điểm danh</span>
-      </a>
-    </nav>
+  <div class="login-wrapper" id="loginWrapper" style="display:none">
+    <div class="login-card">
 
-    <div class="sidebar-footer">
-      <div class="connection-status" id="connectionStatus">
-        <span class="status-dot"></span>
-        <span class="status-text">Đang kết nối...</span>
-      </div>
-    </div>
-  </aside>
-
-  <!-- ═══════════════ MAIN CONTENT ═══════════════ -->
-  <main class="main-content">
-
-    <!-- Top Header -->
-    <header class="top-header">
-      <div class="header-left">
-        <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+      <!-- Brand Logo -->
+      <div class="login-brand">
+        <div class="login-logo">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="3" y1="6" x2="21" y2="6" />
-            <line x1="3" y1="12" x2="21" y2="12" />
-            <line x1="3" y1="18" x2="21" y2="18" />
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" />
+            <circle cx="12" cy="10" r="3" />
+            <path d="M6 20c0-2.2 2.7-4 6-4s6 1.8 6 4" />
           </svg>
-        </button>
-        <div class="page-title" id="pageTitle">Dashboard</div>
-      </div>
-      <div class="header-right">
-        <div class="live-clock" id="liveClock"></div>
-        <button class="theme-toggle" id="themeToggleBtn" title="Giao diện Sáng/Tối">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="themeIcon">
-            <circle cx="12" cy="12" r="5"></circle>
-            <line x1="12" y1="1" x2="12" y2="3"></line>
-            <line x1="12" y1="21" x2="12" y2="23"></line>
-            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-            <line x1="1" y1="12" x2="3" y2="12"></line>
-            <line x1="21" y1="12" x2="23" y2="12"></line>
-            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-          </svg>
-        </button>
-        <button class="refresh-btn" id="refreshBtn" title="Làm mới dữ liệu">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M23 4v6h-6" />
-            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
-          </svg>
-        </button>
-      </div>
-    </header>
-
-    <!-- ────── TAB: DASHBOARD ────── -->
-    <section class="tab-content active" id="tab-dashboard">
-
-      <div class="stats-grid">
-        <div class="stat-card" id="stat-total">
-          <div class="stat-icon purple">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-            </svg>
-          </div>
-          <div class="stat-info">
-            <div class="stat-value skeleton" id="stat-total-val">—</div>
-            <div class="stat-label">Tổng sinh viên</div>
-          </div>
         </div>
-
-        <div class="stat-card" id="stat-present">
-          <div class="stat-icon green">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-              <polyline points="22 4 12 14.01 9 11.01" />
-            </svg>
-          </div>
-          <div class="stat-info">
-            <div class="stat-value skeleton" id="stat-present-val">—</div>
-            <div class="stat-label">Có mặt hôm nay</div>
-          </div>
-        </div>
-
-        <div class="stat-card" id="stat-absent">
-          <div class="stat-icon red">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10" />
-              <line x1="15" y1="9" x2="9" y2="15" />
-              <line x1="9" y1="9" x2="15" y2="15" />
-            </svg>
-          </div>
-          <div class="stat-info">
-            <div class="stat-value skeleton" id="stat-absent-val">—</div>
-            <div class="stat-label">Vắng mặt</div>
-          </div>
-        </div>
-
-        <div class="stat-card" id="stat-rate">
-          <div class="stat-icon blue">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="18" y1="20" x2="18" y2="10" />
-              <line x1="12" y1="20" x2="12" y2="4" />
-              <line x1="6" y1="20" x2="6" y2="14" />
-            </svg>
-          </div>
-          <div class="stat-info">
-            <div class="stat-value skeleton" id="stat-rate-val">—</div>
-            <div class="stat-label">Tỷ lệ điểm danh</div>
-          </div>
+        <div class="login-brand-text">
+          <span class="brand-name">FaceDF</span>
+          <span class="brand-sub">Điểm Danh Thông Minh</span>
         </div>
       </div>
 
-      <!-- Progress bar -->
-      <div class="card progress-card">
-        <div class="card-header">
-          <h3>Tỷ lệ có mặt hôm nay</h3>
-          <span class="card-badge" id="dash-date"></span>
-        </div>
-        <div class="progress-track">
-          <div class="progress-bar" id="attendanceBar" style="width:0%"></div>
-        </div>
-        <div class="progress-labels">
-          <span id="progressLabel">0 / 0 sinh viên</span>
-          <span id="progressPct">0%</span>
-        </div>
+      <!-- Tiêu đề -->
+      <div class="login-heading">
+        <h1>Đăng nhập quản trị</h1>
+        <p>Nhập thông tin tài khoản để truy cập hệ thống</p>
       </div>
 
-      <!-- Recent attendance -->
-      <div class="card">
-        <div class="card-header">
-          <h3>Điểm danh gần nhất</h3>
-          <span class="auto-refresh-badge">
-            <span class="pulse-dot"></span> Tự động cập nhật
-          </span>
-        </div>
-        <div class="table-wrap">
-          <table class="data-table" id="recent-table">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Họ tên</th>
-                <th>MSSV</th>
-                <th>Thời gian</th>
-                <th>Thiết bị</th>
-                <th>Độ tin cậy</th>
-              </tr>
-            </thead>
-            <tbody id="recent-tbody">
-              <tr>
-                <td colspan="6" class="empty-row">Đang tải dữ liệu...</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- ────── TAB: SINH VIÊN ────── -->
-    <section class="tab-content" id="tab-students">
-
-      <!-- Form đăng ký -->
-      <div class="card enroll-card" id="enrollCard">
-        <div class="card-header">
-          <h3>Đăng ký sinh viên mới</h3>
-          <button class="collapse-btn" id="toggleEnroll" aria-label="Thu gọn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-              <polyline points="18 15 12 9 6 15" />
-            </svg>
-          </button>
-        </div>
-
-        <div class="enroll-body" id="enrollBody">
-          <form id="enrollForm" class="enroll-form" novalidate>
-            <div class="form-row">
-              <div class="form-group">
-                <label for="inputFullName">Họ và tên <span class="required">*</span></label>
-                <input type="text" id="inputFullName" name="full_name" placeholder="VD: Nguyễn Văn An" required />
-              </div>
-              <div class="form-group">
-                <label for="inputStudentId">Mã số sinh viên <span class="required">*</span></label>
-                <input type="text" id="inputStudentId" name="student_id" placeholder="VD: SV2024001" required />
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label>Phương thức lấy ảnh <span class="required">*</span></label>
-              <div class="enroll-tabs">
-                <button type="button" class="tab-btn active" data-mode="upload" id="btnModeUpload">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                    <polyline points="17 8 12 3 7 8" />
-                    <line x1="12" y1="3" x2="12" y2="15" />
-                  </svg>
-                  Tải ảnh lên
-                </button>
-                <button type="button" class="tab-btn" data-mode="camera" id="btnModeCamera">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-                    <circle cx="12" cy="13" r="4" />
-                  </svg>
-                  Chụp từ Camera Pi
-                </button>
-              </div>
-            </div>
-
-            <!-- UI cho Mode: Upload -->
-            <div id="sectionUpload" class="enroll-section active">
-              <label>Ảnh khuôn mặt <span class="hint">(chọn 3-5 ảnh rõ nét)</span></label>
-              <div class="upload-zone" id="uploadZone">
-                <input type="file" id="inputImages" name="images" accept="image/*" multiple class="file-input" />
-                <div class="upload-placeholder" id="uploadPlaceholder">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="40" height="40">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                    <polyline points="17 8 12 3 7 8" />
-                    <line x1="12" y1="3" x2="12" y2="15" />
-                  </svg>
-                  <p>Kéo thả ảnh vào đây hoặc <strong>chọn file</strong></p>
-                  <p class="hint">Tối thiểu 3, tối đa 5 ảnh • JPG, PNG, WEBP</p>
-                </div>
-                <div class="image-previews" id="imagePreviews"></div>
-              </div>
-            </div>
-
-            <div id="sectionCamera" class="enroll-section">
-              <div class="form-group pi-ip-group">
-                <label for="inputPiIp">Địa chỉ IP Raspberry Pi <span class="required">*</span></label>
-                <div class="input-with-action">
-                  <input type="text" id="inputPiIp" placeholder="VD: 192.168.1.10" />
-                  <button type="button" class="btn btn-sm btn-outline" id="btnApplyIp">Kết nối</button>
-                </div>
-                <p class="hint">Nhập IP của Pi để xem luồng camera (mặc định port 8080).</p>
-              </div>
-
-              <div class="camera-container">
-                <div class="camera-view">
-                  <img id="piStream" src="" alt="Vui lòng cấu hình IP Pi"
-                    onerror="this.src='data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\'><rect width=\'100\' height=\'100\' fill=\'%23333\'/><text x=\'50%2\' y=\'50%2\' dominant-baseline=\'middle\' text-anchor=\'middle\' fill=\'white\'>Chưa có tín hiệu</text></svg>'" />
-                  <div class="camera-overlay">
-                    <div class="face-guide"></div>
-                  </div>
-                  <button type="button" class="btn-capture" id="btnCapture" title="Chụp ảnh">
-                    <div class="shutter-icon"></div>
-                  </button>
-                  <button type="button" class="btn-reload-stream" id="btnReloadStream" title="Tải lại luồng">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-                      <path d="M23 4v6h-6" />
-                      <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
-                    </svg>
-                  </button>
-                </div>
-                <div class="camera-status">
-                  <span id="captureCountLabel">Đã chụp: 0/5</span>
-                  <div class="capture-progress">
-                    <div class="progress-fill" id="captureProgressFill" style="width: 0%"></div>
-                  </div>
-                </div>
-                <div class="captured-list" id="capturedList">
-                  <!-- Các ảnh đã chụp sẽ hiện ở đây -->
-                </div>
-              </div>
-            </div>
-
-            <div class="form-actions">
-              <button type="button" class="btn btn-ghost" id="resetEnrollBtn">Xóa trắng</button>
-              <button type="submit" class="btn btn-primary" id="enrollSubmitBtn">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                  <circle cx="9" cy="7" r="4" />
-                  <line x1="19" y1="8" x2="19" y2="14" />
-                  <line x1="22" y1="11" x2="16" y2="11" />
-                </svg>
-                Đăng ký sinh viên
-              </button>
-            </div>
-          </form>
-        </div>
+      <!-- Thông báo lỗi -->
+      <div class="login-error" id="loginError">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="15" y1="9" x2="9" y2="15" />
+          <line x1="9" y1="9" x2="15" y2="15" />
+        </svg>
+        <span id="loginErrorMsg">Đăng nhập thất bại</span>
       </div>
 
-      <!-- Danh sách sinh viên -->
-      <div class="card">
-        <div class="card-header">
-          <h3>Danh sách sinh viên <span class="badge" id="studentCount">0</span></h3>
-          <div class="search-wrap">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
-            <input type="search" id="studentSearch" placeholder="Tìm kiếm tên, MSSV..." />
-          </div>
-        </div>
-        <div class="table-wrap">
-          <table class="data-table" id="students-table">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>MSSV</th>
-                <th>Họ và tên</th>
-                <th>Ngày đăng ký</th>
-                <th>Thao tác</th>
-              </tr>
-            </thead>
-            <tbody id="students-tbody">
-              <tr>
-                <td colspan="5" class="empty-row">Đang tải...</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
+      <!-- Form đăng nhập -->
+      <form class="login-form" id="loginForm" novalidate>
 
-    <!-- ────── TAB: ĐIỂM DANH ────── -->
-    <section class="tab-content" id="tab-attendance">
-
-      <div class="card">
-        <div class="card-header filter-header">
-          <h3>Danh sách điểm danh</h3>
-          <div class="filter-controls">
-            <div class="date-picker-wrap">
+        <!-- Mã tổ chức -->
+        <div class="form-group">
+          <label for="tenantCode">Mã tổ chức</label>
+          <div class="input-wrap">
+            <span class="input-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                <line x1="16" y1="2" x2="16" y2="6" />
-                <line x1="8" y1="2" x2="8" y2="6" />
-                <line x1="3" y1="10" x2="21" y2="10" />
+                <rect x="2" y="7" width="20" height="14" rx="2" />
+                <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
               </svg>
-              <input type="date" id="attendanceDate" />
-            </div>
-            <button class="btn btn-outline btn-sm" id="todayBtn">Hôm nay</button>
-            <button class="btn btn-outline btn-sm" id="exportCsvBtn">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                <polyline points="7 10 12 15 17 10" />
-                <line x1="12" y1="15" x2="12" y2="3" />
-              </svg>
-              Xuất CSV
-            </button>
+            </span>
+            <input type="text" id="tenantCode" name="tenant_code" placeholder="VD: UIT_CE"
+              autocomplete="organization" required />
           </div>
         </div>
 
-        <div class="attendance-summary" id="attendanceSummary"></div>
-
-        <div class="table-wrap">
-          <table class="data-table" id="attendance-table">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>MSSV</th>
-                <th>Họ và tên</th>
-                <th>Thời gian điểm danh</th>
-                <th>Thiết bị</th>
-                <th>Độ tin cậy</th>
-                <th>Trạng thái</th>
-              </tr>
-            </thead>
-            <tbody id="attendance-tbody">
-              <tr>
-                <td colspan="7" class="empty-row">Chọn ngày để xem điểm danh</td>
-              </tr>
-            </tbody>
-          </table>
+        <!-- Tên đăng nhập -->
+        <div class="form-group">
+          <label for="username">Tên đăng nhập</label>
+          <div class="input-wrap">
+            <span class="input-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+            </span>
+            <input type="text" id="username" name="username" placeholder="admin"
+              autocomplete="username" required />
+          </div>
         </div>
-      </div>
-    </section>
 
-  </main>
+        <!-- Mật khẩu -->
+        <div class="form-group">
+          <label for="password">Mật khẩu</label>
+          <div class="input-wrap">
+            <span class="input-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+            </span>
+            <input type="password" id="password" name="password" placeholder="••••••••"
+              autocomplete="current-password" required />
+          </div>
+        </div>
 
-  <!-- ═══════════════ MODAL XÓA ═══════════════ -->
-  <div class="modal-overlay" id="deleteModal" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
-    <div class="modal">
-      <div class="modal-icon danger">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="32" height="32">
-          <polyline points="3 6 5 6 21 6" />
-          <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
-          <path d="M10 11v6" />
-          <path d="M14 11v6" />
-          <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
-        </svg>
-      </div>
-      <h3 id="deleteModalTitle">Xác nhận xóa sinh viên</h3>
-      <p id="deleteModalMsg">Bạn có chắc muốn xóa sinh viên này? Toàn bộ dữ liệu điểm danh sẽ bị xóa vĩnh viễn.</p>
-      <div class="modal-actions">
-        <button class="btn btn-ghost" id="cancelDeleteBtn">Hủy bỏ</button>
-        <button class="btn btn-danger" id="confirmDeleteBtn">Xóa ngay</button>
-      </div>
+        <!-- Nút đăng nhập -->
+        <button type="submit" class="btn-login" id="loginBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+            <polyline points="10 17 15 12 10 7" />
+            <line x1="15" y1="12" x2="3" y2="12" />
+          </svg>
+          Đăng nhập
+        </button>
+
+      </form>
+    </div>
+
+    <!-- Footer -->
+    <div class="login-footer">
+      FaceDF &copy; 2024 — Đồ án 2 UIT &middot; CE334 AIoT
     </div>
   </div>
 
-  <!-- ═══════════════ TOAST ═══════════════ -->
-  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+  <script>
+    /* ══════════════════════════════════════════════════════════════
+       FaceDF — login.js (inline)
+       Xử lý đăng nhập, kiểm tra token, redirect
+    ══════════════════════════════════════════════════════════════ */
 
-  <!-- ═══════════════ LOADING OVERLAY ═══════════════ -->
-  <div class="loading-overlay" id="loadingOverlay">
-    <div class="loading-spinner"></div>
-  </div>
+    const API_BASE = '';  // Cùng origin với backend
 
-  <script src="app.js"></script>
+    // Kiểm tra nếu đã có token thì chuyển thẳng sang index.html
+    (function checkExistingToken() {
+      const token = localStorage.getItem('facedf-token');
+      if (token) {
+        // Redirect sang trang chính
+        window.location.replace('index.html');
+        return;
+      }
+      // Hiện form đăng nhập
+      document.getElementById('fullLoading').style.display = 'none';
+      document.getElementById('loginWrapper').style.display = '';
+    })();
+
+    const loginForm = document.getElementById('loginForm');
+    const loginBtn = document.getElementById('loginBtn');
+    const loginError = document.getElementById('loginError');
+    const loginErrorMsg = document.getElementById('loginErrorMsg');
+
+    // Hiển thị thông báo lỗi
+    function showError(msg) {
+      loginErrorMsg.textContent = msg;
+      loginError.classList.add('show');
+    }
+
+    // Ẩn thông báo lỗi
+    function hideError() {
+      loginError.classList.remove('show');
+    }
+
+    // Đặt trạng thái đang loading
+    function setLoading(loading) {
+      loginBtn.disabled = loading;
+      if (loading) {
+        loginBtn.innerHTML = `<div class="spinner"></div> Đang đăng nhập...`;
+      } else {
+        loginBtn.innerHTML = `
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+            <polyline points="10 17 15 12 10 7"/>
+            <line x1="15" y1="12" x2="3" y2="12"/>
+          </svg>
+          Đăng nhập`;
+      }
+    }
+
+    // Xử lý submit form đăng nhập
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideError();
+
+      const tenantCode = document.getElementById('tenantCode').value.trim();
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+
+      // Kiểm tra input cơ bản
+      if (!tenantCode || !username || !password) {
+        showError('Vui lòng điền đầy đủ thông tin đăng nhập.');
+        return;
+      }
+
+      setLoading(true);
+
+      try {
+        const res = await fetch(`${API_BASE}/api/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ tenant_code: tenantCode, username, password }),
+        });
+
+        const json = await res.json().catch(() => ({}));
+
+        if (!res.ok) {
+          // Xử lý lỗi từ server
+          const errMsg = json.detail || `Đăng nhập thất bại (${res.status})`;
+          showError(errMsg);
+          return;
+        }
+
+        // Lưu token và thông tin tổ chức vào localStorage
+        localStorage.setItem('facedf-token', json.access_token);
+        localStorage.setItem('facedf-tenant-name', json.tenant_name || tenantCode);
+
+        // Redirect sang trang chính
+        window.location.replace('index.html');
+
+      } catch (err) {
+        showError('Không thể kết nối đến máy chủ. Vui lòng thử lại.');
+      } finally {
+        setLoading(false);
+      }
+    });
+
+    // Ẩn lỗi khi người dùng bắt đầu gõ lại
+    ['tenantCode', 'username', 'password'].forEach(id => {
+      document.getElementById(id).addEventListener('input', hideError);
+    });
+  </script>
+
 </body>
 
 </html>

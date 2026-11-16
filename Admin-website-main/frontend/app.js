@@ -7,6 +7,36 @@ const API = ''; // same origin — FastAPI serves static files at /
 let PI_IP = localStorage.getItem('pi-ip') || '192.168.1.10'; // Mặc định, sẽ cho phép người dùng đổi
 
 /* ══════════════════════════════════════════════════════════════
+   AUTHENTICATION CHECK (M3)
+══════════════════════════════════════════════════════════════ */
+function checkAuth() {
+  const token = localStorage.getItem('access_token');
+  if (!token) {
+    window.location.replace('login.html');
+    return false;
+  }
+  const badge = document.getElementById('tenantBadge');
+  if (badge) {
+    const tenantName = localStorage.getItem('tenant_name') || 'Tổ chức';
+    badge.textContent = `🏢 ${tenantName}`;
+    badge.title = `Tổ chức: ${tenantName}`;
+  }
+  return true;
+}
+
+function logout() {
+  localStorage.removeItem('access_token');
+  localStorage.removeItem('tenant_name');
+  localStorage.removeItem('tenant_code');
+  window.location.replace('login.html');
+}
+
+// Chạy kiểm tra đăng nhập ngay khi file được nạp
+if (!checkAuth()) {
+  throw new Error("Chưa đăng nhập -> Đang chuyển hướng sang login.html");
+}
+
+/* ══════════════════════════════════════════════════════════════
    UTILITY
 ══════════════════════════════════════════════════════════════ */
 
@@ -35,7 +65,24 @@ function todayISO() {
 /** Fetch JSON from API, returns { data, error } */
 async function apiFetch(path, opts = {}) {
   try {
+    const token = localStorage.getItem('access_token');
+    opts.headers = opts.headers || {};
+    if (token) {
+      if (opts.headers instanceof Headers) {
+        opts.headers.set('Authorization', `Bearer ${token}`);
+      } else {
+        opts.headers['Authorization'] = `Bearer ${token}`;
+      }
+    }
     const res = await fetch(API + path, opts);
+    if (res.status === 401 && !path.includes('/api/auth/login')) {
+      // Token hết hạn hoặc không hợp lệ -> xóa token và chuyển trang
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('tenant_name');
+      localStorage.removeItem('tenant_code');
+      window.location.replace('login.html');
+      return { data: null, error: 'Phiên đăng nhập hết hạn' };
+    }
     const json = await res.json().catch(() => ({}));
     if (!res.ok) return { data: null, error: json.detail || `Lỗi ${res.status}` };
     return { data: json, error: null };
@@ -90,7 +137,13 @@ setInterval(updateClock, 1000);
 /* ══════════════════════════════════════════════════════════════
    NAVIGATION
 ══════════════════════════════════════════════════════════════ */
-const tabTitles = { dashboard: 'Dashboard', students: 'Sinh viên', attendance: 'Điểm danh' };
+const tabTitles = { 
+  dashboard: 'Dashboard', 
+  students: 'Sinh viên', 
+  attendance: 'Điểm danh', 
+  report: 'Báo cáo',
+  reports: 'Báo cáo' 
+};
 const pageTitleEl = document.getElementById('pageTitle');
 
 function switchTab(name) {
@@ -101,6 +154,10 @@ function switchTab(name) {
   if (name === 'dashboard') loadDashboard();
   if (name === 'students') loadStudents();
   if (name === 'attendance') { loadAttendanceForDate(document.getElementById('attendanceDate').value || todayISO()); }
+  if (name === 'report' || name === 'reports') { 
+    loadReport(document.getElementById('reportDate')?.value || todayISO()); 
+    loadShiftSettings();
+  }
 }
 
 document.querySelectorAll('.nav-item').forEach(n => {
@@ -696,6 +753,167 @@ function similarityCell(sim) {
     <span class="similarity-text">${pct}%</span>
   </div>`;
 }
+
+/* ══════════════════════════════════════════════════════════════
+   M3 EXTENSIONS: EXCEL EXPORT, REPORT TAB, LOGOUT
+══════════════════════════════════════════════════════════════ */
+
+// Đăng ký sự kiện nút Đăng xuất
+document.getElementById('logoutBtn')?.addEventListener('click', () => {
+  if (confirm('Bạn có chắc muốn đăng xuất khỏi hệ thống?')) {
+    logout();
+  }
+});
+
+// Nút Xuất Excel trong tab Điểm danh
+document.getElementById('exportExcelBtn')?.addEventListener('click', async () => {
+  const dateStr = attendanceDateInput?.value || todayISO();
+  const token = localStorage.getItem('access_token');
+  try {
+    showLoading();
+    const res = await fetch(`${API}/api/attendance/export/excel?date=${dateStr}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      showToast('error', 'Lỗi xuất Excel', err.detail || 'Không thể tạo file');
+      return;
+    }
+    const blob = await res.blob();
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `diem-danh-${dateStr}.xlsx`;
+    link.click();
+    showToast('success', 'Xuất Excel thành công', `Tải về file diem-danh-${dateStr}.xlsx`);
+  } catch (e) {
+    showToast('error', 'Lỗi', e.message);
+  } finally {
+    hideLoading();
+  }
+});
+
+// Tải dữ liệu Tab Báo cáo
+async function loadReport(dateStr) {
+  dateStr = dateStr || todayISO();
+  const dateEl = document.getElementById('reportDate') || document.getElementById('reportDateInput');
+  if (dateEl) dateEl.value = dateStr;
+
+  const { data, error } = await apiFetch(`/api/attendance/summary?date=${dateStr}`);
+  if (error || !data) {
+    showToast('error', 'Lỗi tải báo cáo', error);
+    return;
+  }
+
+  // Cập nhật các thẻ tóm tắt (hỗ trợ cả 2 bộ id rpt-* và rep-*)
+  const setVal = (ids, val) => {
+    ids.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = val ?? 0;
+    });
+  };
+
+  setVal(['rpt-total-checkin', 'rep-checkin'], data.total_checkin);
+  setVal(['rpt-on-time', 'rep-ontime'], data.on_time);
+  setVal(['rpt-late', 'rep-late'], data.late);
+  setVal(['rpt-early-leave', 'rep-early'], data.early_leave);
+
+  const badgeDate = document.getElementById('reportDateBadge');
+  if (badgeDate) badgeDate.textContent = fmtDate(dateStr);
+
+  // Render bảng chi tiết ca làm việc
+  const tbody = document.getElementById('report-tbody');
+  if (!tbody) return;
+
+  if (!data.details || data.details.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7" class="empty-row">Không có dữ liệu điểm danh ngày ${fmtDate(dateStr)}</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = data.details.map((d, i) => {
+    let statusBadge = '<span class="status-pill status-present">Đúng giờ</span>';
+    if (d.status === 'late') {
+      statusBadge = '<span class="status-pill" style="background:rgba(234,179,8,0.15);color:#eab308;border:1px solid rgba(234,179,8,0.3)">Đi muộn</span>';
+    } else if (d.status === 'early_leave') {
+      statusBadge = '<span class="status-pill status-absent">Về sớm</span>';
+    }
+
+    const typeStr = d.check_out_time ? 'Ra (Check-out)' : 'Vào (Check-in)';
+    const timeDisplay = d.check_out_time ? fmtDateTime(d.check_out_time) : (d.check_in_time ? fmtDateTime(d.check_in_time) : '—');
+
+    return `
+      <tr>
+        <td>${i + 1}</td>
+        <td><strong>${esc(d.student_id)}</strong></td>
+        <td>${esc(d.full_name)}</td>
+        <td><span class="badge" style="background:rgba(99,102,241,0.15);color:#818cf8">${typeStr}</span></td>
+        <td>${timeDisplay}</td>
+        <td>${statusBadge}</td>
+        <td>${esc(d.device_id || 'Raspi_01')}</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+// Tải thông tin cấu hình ca làm việc
+async function loadShiftSettings() {
+  const { data, error } = await apiFetch('/api/tenant/shift');
+  if (error || !data) return;
+
+  const startIn = document.getElementById('shiftStartInput');
+  const endIn = document.getElementById('shiftEndInput');
+  const badge = document.getElementById('shiftTenantBadge');
+
+  if (startIn) startIn.value = data.shift_start || '08:00';
+  if (endIn) endIn.value = data.shift_end || '17:00';
+  if (badge) badge.textContent = `${data.tenant_code} (${data.shift_start} - ${data.shift_end})`;
+}
+
+// Bắt sự kiện lưu cấu hình ca làm việc
+document.getElementById('shiftConfigForm')?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const shiftStart = document.getElementById('shiftStartInput').value;
+  const shiftEnd = document.getElementById('shiftEndInput').value;
+  const msgEl = document.getElementById('shiftStatusMsg');
+
+  if (!shiftStart || !shiftEnd) {
+    showToast('warning', 'Thiếu dữ liệu', 'Vui lòng chọn cả giờ vào và giờ ra');
+    return;
+  }
+
+  showLoading();
+  const { data, error } = await apiFetch('/api/tenant/shift', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ shift_start: shiftStart, shift_end: shiftEnd })
+  });
+  hideLoading();
+
+  if (error) {
+    showToast('error', 'Lỗi lưu ca', error);
+  } else {
+    showToast('success', 'Thành công', 'Đã cập nhật ca làm việc mới!');
+    if (msgEl) {
+      msgEl.textContent = '✅ Đã lưu thay đổi';
+      setTimeout(() => { msgEl.textContent = ''; }, 3000);
+    }
+    loadShiftSettings();
+  }
+});
+
+// Bắt sự kiện lọc ngày trên Tab Báo cáo
+document.getElementById('reportDate')?.addEventListener('change', (e) => {
+  loadReport(e.target.value);
+});
+document.getElementById('loadReportBtn')?.addEventListener('click', () => {
+  const dt = document.getElementById('reportDate')?.value || todayISO();
+  loadReport(dt);
+});
+document.getElementById('reportTodayBtn')?.addEventListener('click', () => {
+  const today = todayISO();
+  const inp = document.getElementById('reportDate');
+  if (inp) inp.value = today;
+  loadReport(today);
+});
 
 /* ══════════════════════════════════════════════════════════════
    AUTO REFRESH (every 30 sec on dashboard)

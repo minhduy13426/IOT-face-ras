@@ -63,6 +63,16 @@
         </svg>
         <span>Điểm danh</span>
       </a>
+      <!-- Tab Báo cáo mới -->
+      <a href="#" class="nav-item" data-tab="report" id="nav-report">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="20" x2="18" y2="10" />
+          <line x1="12" y1="20" x2="12" y2="4" />
+          <line x1="6" y1="20" x2="6" y2="14" />
+          <rect x="2" y="2" width="20" height="20" rx="2" opacity="0.3" />
+        </svg>
+        <span>Báo cáo</span>
+      </a>
     </nav>
 
     <div class="sidebar-footer">
@@ -90,6 +100,15 @@
       </div>
       <div class="header-right">
         <div class="live-clock" id="liveClock"></div>
+
+        <!-- Tên tổ chức từ localStorage -->
+        <div class="tenant-badge" id="tenantBadge" style="
+          font-size:12px; color:var(--text2); font-weight:500;
+          padding:4px 10px; border:1px solid var(--border);
+          border-radius:20px; white-space:nowrap; max-width:140px;
+          overflow:hidden; text-overflow:ellipsis;">
+        </div>
+
         <button class="theme-toggle" id="themeToggleBtn" title="Giao diện Sáng/Tối">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="themeIcon">
             <circle cx="12" cy="12" r="5"></circle>
@@ -108,6 +127,19 @@
             <path d="M23 4v6h-6" />
             <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
           </svg>
+        </button>
+
+        <!-- Nút đăng xuất -->
+        <button class="btn btn-outline btn-sm" id="logoutBtn" title="Đăng xuất" style="
+          display:flex; align-items:center; gap:6px; padding:6px 12px;
+          font-size:13px; color:var(--red,#ef4444);
+          border-color:rgba(239,68,68,0.3);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" />
+          </svg>
+          Đăng xuất
         </button>
       </div>
     </header>
@@ -397,6 +429,16 @@
               </svg>
               Xuất CSV
             </button>
+            <!-- Nút Xuất Excel mới -->
+            <button class="btn btn-outline btn-sm" id="exportExcelBtn" style="color:var(--green,#22c55e);border-color:rgba(34,197,94,0.35)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="8" y1="13" x2="16" y2="13" />
+                <line x1="8" y1="17" x2="16" y2="17" />
+              </svg>
+              Xuất Excel
+            </button>
           </div>
         </div>
 
@@ -410,6 +452,7 @@
                 <th>MSSV</th>
                 <th>Họ và tên</th>
                 <th>Thời gian điểm danh</th>
+                <th>Loại</th>
                 <th>Thiết bị</th>
                 <th>Độ tin cậy</th>
                 <th>Trạng thái</th>
@@ -417,7 +460,143 @@
             </thead>
             <tbody id="attendance-tbody">
               <tr>
-                <td colspan="7" class="empty-row">Chọn ngày để xem điểm danh</td>
+                <td colspan="8" class="empty-row">Chọn ngày để xem điểm danh</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ────── TAB: BÁO CÁO (mới) ────── -->
+    <section class="tab-content" id="tab-report">
+
+      <!-- Cấu hình Ca làm việc (Ra / Vào) -->
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-header">
+          <h3>⏱️ Cấu hình Ca làm việc (Giờ Vào / Ra)</h3>
+          <span class="card-badge" id="shiftTenantBadge">Đang tải ca...</span>
+        </div>
+        <div class="card-body" style="padding:16px 20px;">
+          <form id="shiftConfigForm" style="display:flex; flex-wrap:wrap; gap:20px; align-items:flex-end;">
+            <div class="form-group" style="margin:0; min-width:160px;">
+              <label for="shiftStartInput" style="display:block; margin-bottom:6px; font-weight:600; font-size:13px;">Giờ bắt đầu ca (Vào) <span class="required">*</span></label>
+              <input type="time" id="shiftStartInput" required style="padding:8px 12px; border-radius:8px; border:1px solid var(--border); background:var(--input-bg, #1a1d27); color:var(--text); font-size:14px; width:100%;" />
+            </div>
+            <div class="form-group" style="margin:0; min-width:160px;">
+              <label for="shiftEndInput" style="display:block; margin-bottom:6px; font-weight:600; font-size:13px;">Giờ kết thúc ca (Ra) <span class="required">*</span></label>
+              <input type="time" id="shiftEndInput" required style="padding:8px 12px; border-radius:8px; border:1px solid var(--border); background:var(--input-bg, #1a1d27); color:var(--text); font-size:14px; width:100%;" />
+            </div>
+            <button type="submit" class="btn btn-primary" id="saveShiftBtn" style="height:38px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                <polyline points="7 3 7 8 15 8"></polyline>
+              </svg>
+              Lưu cấu hình ca
+            </button>
+            <span id="shiftStatusMsg" style="font-size:13px; color:var(--text2); align-self:center;"></span>
+          </form>
+        </div>
+      </div>
+
+      <!-- Bộ lọc ngày báo cáo -->
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-header filter-header">
+          <h3>Báo cáo điểm danh</h3>
+          <div class="filter-controls">
+            <div class="date-picker-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                <line x1="16" y1="2" x2="16" y2="6" />
+                <line x1="8" y1="2" x2="8" y2="6" />
+                <line x1="3" y1="10" x2="21" y2="10" />
+              </svg>
+              <input type="date" id="reportDate" />
+            </div>
+            <button class="btn btn-outline btn-sm" id="reportTodayBtn">Hôm nay</button>
+            <button class="btn btn-primary btn-sm" id="loadReportBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+              Xem báo cáo
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary cards báo cáo -->
+      <div class="stats-grid" id="reportSummaryGrid" style="margin-bottom:16px">
+        <div class="stat-card">
+          <div class="stat-icon blue">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+            </svg>
+          </div>
+          <div class="stat-info">
+            <div class="stat-value" id="rpt-total-checkin">—</div>
+            <div class="stat-label">Tổng vào</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+          </div>
+          <div class="stat-info">
+            <div class="stat-value" id="rpt-on-time">—</div>
+            <div class="stat-label">Đúng giờ</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon orange" style="background:rgba(234,88,12,0.15)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          <div class="stat-info">
+            <div class="stat-value" id="rpt-late">—</div>
+            <div class="stat-label">Đi muộn</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon red">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+              <polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+          </div>
+          <div class="stat-info">
+            <div class="stat-value" id="rpt-early-leave">—</div>
+            <div class="stat-label">Về sớm</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bảng chi tiết báo cáo -->
+      <div class="card">
+        <div class="card-header">
+          <h3>Chi tiết check-in / check-out</h3>
+          <span class="card-badge" id="reportDateBadge"></span>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table" id="report-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>MSSV</th>
+                <th>Họ và tên</th>
+                <th>Loại</th>
+                <th>Thời gian</th>
+                <th>Trạng thái</th>
+                <th>Thiết bị</th>
+              </tr>
+            </thead>
+            <tbody id="report-tbody">
+              <tr>
+                <td colspan="7" class="empty-row">Chọn ngày và nhấn "Xem báo cáo"</td>
               </tr>
             </tbody>
           </table>
